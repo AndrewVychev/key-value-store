@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">keyvaluestore</string>
+    <string name="done">DONE</string>
+    <string name="clear">CLEAR</string>
+</resources>
