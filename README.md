@@ -14,9 +14,9 @@ ROLLBACK          // revert to state prior to BEGIN call
 
 ## Transactional Key Value Store
 Implementation details: 
-Each transaction has its own storage. When a new transaction is created, it is placed on the stack and a new storage is created for it. When we need to rollback transaction we delete transaction and their local storage. In case of commit we merge parent transaction store with current and remove transaction. 
+Each transaction has its own storage snapshot. When a new transaction is created, it is placed on the stack and a storage snapshot is created for it. When we need to rollback transaction we just return our global storage to previous state helping snapshot. In case of commit we remove transaction with a snapshot.
 
-Commands are executed using the CommandExecutor. Each command has its own executor with command execution logic. All executors are created through the CommandExecutorFactory. The factory knows how to create executors with the necessary dependencies. The executor lives in the transaction scope and always has the necessary repository to work with the transaction local storage. 
+Commands are executed using the CommandExecutor. Each command has its own executor with command execution logic. All executors are getting through the CommandExecutorFactory. Executors creates via DI. 
 
 Ui has writen on Compose
 
