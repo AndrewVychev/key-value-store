@@ -1,5 +1,6 @@
 package com.vychev.keyvaluestore.mapper
 
+import com.vychev.keyvaluestore.domain.entity.BeginTransactionParam
 import com.vychev.keyvaluestore.domain.entity.Command
 import com.vychev.keyvaluestore.domain.entity.CommandParams
 import com.vychev.keyvaluestore.domain.entity.KeyValueParams
@@ -12,7 +13,7 @@ class CommandResultMapper @Inject constructor(){
      */
     fun mapParams(command: Command): CommandParams {
         return when (command) {
-            is Command.BeginTransaction,
+            is Command.BeginTransaction -> BeginTransactionParam(false)
             is Command.CommitTransaction,
             is Command.RollbackTransaction -> CommandParams()
             is Command.Delete -> KeyValueParams(key = command.key)

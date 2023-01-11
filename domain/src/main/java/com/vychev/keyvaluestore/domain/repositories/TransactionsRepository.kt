@@ -8,11 +8,10 @@ interface TransactionsRepository {
 
     fun remove(transactionId: String)
 
-    fun commit()
-
     fun getTop(): Transaction
 
     fun size() : Int
 
     fun iterable() : Iterable<Transaction>
+
 }

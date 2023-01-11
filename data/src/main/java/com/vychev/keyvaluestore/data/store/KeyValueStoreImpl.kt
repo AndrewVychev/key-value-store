@@ -1,11 +1,12 @@
 package com.vychev.keyvaluestore.data.store
 
 import com.vychev.keyvaluestore.domain.KeyValueStore
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 class KeyValueStoreImpl @Inject constructor() : KeyValueStore {
 
-    private val store = mutableMapOf<String, String>()
+    private val store = ConcurrentHashMap<String, String>()
 
     override fun put(key: String, value: String) {
         store[key] = value
@@ -23,14 +24,11 @@ class KeyValueStoreImpl @Inject constructor() : KeyValueStore {
         return store.count { it.value == key }
     }
 
-    override fun merge(keyValueStore: KeyValueStore) {
-        keyValueStore.keys().forEach { key ->
-            val value = requireNotNull(keyValueStore.get(key))
-            store[key] = value
-        }
+    override fun clear() {
+        store.clear()
     }
 
-    override fun keys(): Set<String> {
-        return store.keys
+    override fun entries(): Iterable<Map.Entry<String, String>> {
+        return store.entries
     }
 }

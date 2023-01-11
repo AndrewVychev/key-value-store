@@ -1,12 +1,19 @@
 package com.vychev.keyvaluestore
 
+import com.vychev.keyvaluestore.data.repository.KeyValueRepositoryImpl
+import com.vychev.keyvaluestore.data.repository.TransactionSnapshotRepositoryImpl
 import com.vychev.keyvaluestore.data.repository.TransactionsRepositoryImpl
-import com.vychev.keyvaluestore.data.store.TransactionStoreImpl
+import com.vychev.keyvaluestore.data.store.KeyValueStoreImpl
 import com.vychev.keyvaluestore.domain.entity.Command
+import com.vychev.keyvaluestore.domain.executors.BeginTransactionCommandExecutor
+import com.vychev.keyvaluestore.domain.executors.CommitTransactionCommandExecutor
+import com.vychev.keyvaluestore.domain.executors.CountValueCommandExecutor
+import com.vychev.keyvaluestore.domain.executors.DeleteValueCommandExecutor
+import com.vychev.keyvaluestore.domain.executors.GetValueCommandExecutor
+import com.vychev.keyvaluestore.domain.executors.RollbackTransactionCommandExecutor
+import com.vychev.keyvaluestore.domain.executors.SetValueCommandExecutor
 import com.vychev.keyvaluestore.domain.usecase.ClearCommandsUseCase
-import com.vychev.keyvaluestore.domain.usecase.GetCurrentTransactionUseCase
 import com.vychev.keyvaluestore.executors.factory.CommandExecutorFactory
-import com.vychev.keyvaluestore.executors.factory.KeyValueRepositoryProviderImpl
 import com.vychev.keyvaluestore.mapper.CommandResultMapper
 import com.vychev.keyvaluestore.presentation.CommandExecutorManager
 import kotlinx.coroutines.runBlocking
@@ -16,23 +23,27 @@ import org.junit.Assert.*
 
 class CommandExecutorTest {
 
-    private val transactionStore = TransactionStoreImpl()
-    private val transactionsRepository =
-        TransactionsRepositoryImpl(transactionStore = transactionStore)
+    private val transactionsRepository = TransactionsRepositoryImpl()
+    private val keyValueRepository = KeyValueRepositoryImpl(KeyValueStoreImpl())
+    private val snapshotRepository = TransactionSnapshotRepositoryImpl()
 
     private val commandExecutorManager = CommandExecutorManager(
         commandExecutorFactory = CommandExecutorFactory(
-            transactionsRepository = transactionsRepository,
-            keyValueRepositoryProvider = KeyValueRepositoryProviderImpl(
-                transactionStore
-            )
-        ),
-        getCurrentTransactionUseCase = GetCurrentTransactionUseCase(
-            transactionsRepository
+            BeginTransactionCommandExecutor(transactionsRepository, keyValueRepository, snapshotRepository),
+            CommitTransactionCommandExecutor(transactionsRepository, snapshotRepository),
+            CountValueCommandExecutor(keyValueRepository),
+            DeleteValueCommandExecutor(keyValueRepository),
+            GetValueCommandExecutor(keyValueRepository),
+            RollbackTransactionCommandExecutor(transactionsRepository, snapshotRepository, keyValueRepository),
+            SetValueCommandExecutor(keyValueRepository)
         ),
         clearCommandsUseCase = ClearCommandsUseCase(transactionsRepository = transactionsRepository),
         mapper = CommandResultMapper()
     )
+
+    init {
+        runBlocking { commandExecutorManager.addRootTransaction() }
+    }
 
     @Test
     fun `Set and get a value`() = runBlocking {
@@ -109,6 +120,4 @@ class CommandExecutorTest {
         }
         Unit
     }
-
-
 }

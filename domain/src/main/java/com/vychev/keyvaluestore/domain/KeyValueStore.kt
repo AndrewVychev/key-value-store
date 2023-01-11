@@ -10,11 +10,8 @@ interface KeyValueStore {
 
     fun count(key: String) : Int
 
-    /**
-     * Merge one store into another. It can be useful when we need to commit transaction.
-     */
-    fun merge(keyValueStore: KeyValueStore)
+    fun clear()
 
-    fun keys(): Set<String>
+    fun entries(): Iterable<Map.Entry<String, String>>
 
 }

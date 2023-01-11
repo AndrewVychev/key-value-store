@@ -2,8 +2,9 @@ package com.vychev.keyvaluestore.domain.executors
 
 import com.vychev.keyvaluestore.domain.entity.KeyValueParams
 import com.vychev.keyvaluestore.domain.repositories.KeyValueRepository
+import javax.inject.Inject
 
-class DeleteValueCommandExecutor(
+class DeleteValueCommandExecutor @Inject constructor(
     private val keyValueRepository: KeyValueRepository,
 ) : CommandExecutor<KeyValueParams, Unit> {
 

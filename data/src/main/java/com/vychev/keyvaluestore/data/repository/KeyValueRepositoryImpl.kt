@@ -21,4 +21,12 @@ class KeyValueRepositoryImpl @Inject constructor(private val store: KeyValueStor
     override fun count(key: String): Int {
         return store.count(key)
     }
+
+    override fun clear() {
+        store.clear()
+    }
+
+    override fun entries(): Iterable<Map.Entry<String, String>> {
+        return store.entries()
+    }
 }

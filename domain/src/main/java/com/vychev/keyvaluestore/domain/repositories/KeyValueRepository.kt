@@ -9,5 +9,9 @@ interface KeyValueRepository {
     fun delete(key: String)
 
     fun count(key: String): Int
+
+    fun clear()
+
+    fun entries(): Iterable<Map.Entry<String, String>>
 }
 

@@ -1,13 +1,13 @@
 package com.vychev.keyvaluestore.di
 
 import com.vychev.keyvaluestore.data.repository.KeyValueRepositoryImpl
+import com.vychev.keyvaluestore.data.repository.TransactionSnapshotRepositoryImpl
 import com.vychev.keyvaluestore.data.repository.TransactionsRepositoryImpl
-import com.vychev.keyvaluestore.data.store.TransactionStoreImpl
+import com.vychev.keyvaluestore.data.store.KeyValueStoreImpl
+import com.vychev.keyvaluestore.domain.KeyValueStore
 import com.vychev.keyvaluestore.domain.repositories.KeyValueRepository
-import com.vychev.keyvaluestore.domain.repositories.KeyValueRepositoryProvider
-import com.vychev.keyvaluestore.domain.repositories.TransactionStore
+import com.vychev.keyvaluestore.domain.repositories.TransactionSnapshotRepository
 import com.vychev.keyvaluestore.domain.repositories.TransactionsRepository
-import com.vychev.keyvaluestore.executors.factory.KeyValueRepositoryProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -19,6 +19,11 @@ import javax.inject.Singleton
 interface BindsModule {
 
     @Binds
+    @Singleton
+    fun bindKeyValueStore(repository: KeyValueStoreImpl): KeyValueStore
+
+    @Binds
+    @Singleton
     fun bindKeyValueRepository(repository: KeyValueRepositoryImpl): KeyValueRepository
 
     @Binds
@@ -27,9 +32,6 @@ interface BindsModule {
 
     @Binds
     @Singleton
-    fun bindTransactionStore(store: TransactionStoreImpl): TransactionStore
-
-    @Binds
-    fun bindKeyValueRepositoryProvider(repository: KeyValueRepositoryProviderImpl): KeyValueRepositoryProvider
+    fun bindTransactionSnapshotRepository(repository: TransactionSnapshotRepositoryImpl): TransactionSnapshotRepository
 
 }

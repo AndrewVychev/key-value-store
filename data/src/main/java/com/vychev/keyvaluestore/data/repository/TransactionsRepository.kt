@@ -1,9 +1,10 @@
 package com.vychev.keyvaluestore.data.repository
 
 import com.vychev.keyvaluestore.domain.entity.Transaction
-import com.vychev.keyvaluestore.domain.repositories.TransactionStore
 import com.vychev.keyvaluestore.domain.repositories.TransactionsRepository
 import java.util.LinkedList
+import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.ConcurrentLinkedQueue
 import javax.inject.Inject
 
 /**
@@ -11,30 +12,16 @@ import javax.inject.Inject
  * Every transaction has their own scoped store.
  * We have access to this store throw TransactionStore interface
  */
-class TransactionsRepositoryImpl @Inject constructor(
-    private val transactionStore: TransactionStore
-) : TransactionsRepository {
+class TransactionsRepositoryImpl @Inject constructor() : TransactionsRepository {
 
-    private val transactions = LinkedList<Transaction>()
-
-    init {
-        add(Transaction(isRoot = true))
-    }
+    private val transactions = ConcurrentLinkedDeque<Transaction>()
 
     override fun add(transaction: Transaction) {
         transactions.addFirst(transaction)
-        transactionStore.add(transaction.id)
     }
 
     override fun remove(transactionId: String) {
         transactions.removeAll { it.id == transactionId }
-        transactionStore.remove(transactionId)
-    }
-
-    override fun commit() {
-        val store = transactionStore.get(getTop().id) ?: throw NullPointerException()
-        remove(getTop().id)
-        transactionStore.get(getTop().id)?.merge(store)
     }
 
     override fun getTop() = transactions.first
@@ -42,4 +29,5 @@ class TransactionsRepositoryImpl @Inject constructor(
     override fun size() = transactions.size
 
     override fun iterable() = transactions.asIterable()
+
 }

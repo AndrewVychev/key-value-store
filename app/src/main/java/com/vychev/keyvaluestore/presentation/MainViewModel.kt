@@ -31,6 +31,12 @@ class MainViewModel @Inject constructor(
 
     val commandLineState = _commandLineState.asStateFlow()
 
+    init {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            commandExecutorManager.addRootTransaction()
+        }
+    }
+
     fun onValueChanged(value: String) {
         _commandLineState.update { it.copy(currentCommand = value) }
     }
